@@ -34,7 +34,6 @@
 		556A929F1B70D16C00187063 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 556A929C1B70D16C00187063 /* ProgressHUD.bundle */; };
 		556A92A01B70D16C00187063 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 556A929E1B70D16C00187063 /* ProgressHUD.m */; };
 		5570AFB91B4122F900978131 /* UploadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5570AFB81B4122F900978131 /* UploadManager.m */; };
-		5585D5C91B8D796F00DB7D3F /* TesseractOCR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5585D5C81B8D796F00DB7D3F /* TesseractOCR.framework */; };
 		5585D5CB1B8D797C00DB7D3F /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5585D5CA1B8D797C00DB7D3F /* opencv2.framework */; };
 		55C807CA1B4AA5A700C096BF /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55C807C91B4AA5A700C096BF /* CoreTelephony.framework */; };
 		55FDF9971B2A9061001400E1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FDF9961B2A9061001400E1 /* ViewController.swift */; };
@@ -117,7 +116,6 @@
 				5556DD7E1B314FEA00564C82 /* CoreImage.framework in Frameworks */,
 				5585D5CB1B8D797C00DB7D3F /* opencv2.framework in Frameworks */,
 				554649881B3055C8003B2AC4 /* libstdc++.dylib in Frameworks */,
-				5585D5C91B8D796F00DB7D3F /* TesseractOCR.framework in Frameworks */,
 				55FDF9991B2AAEA7001400E1 /* AssetsLibrary.framework in Frameworks */,
 				550931A11B26EE0400E243F8 /* CoreGraphics.framework in Frameworks */,
 				550931881B26C4F300E243F8 /* AVFoundation.framework in Frameworks */,
@@ -322,6 +320,8 @@
 				TargetAttributes = {
 					5509315D1B26C2A500E243F8 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = PZ4BB3W59D;
+						LastSwiftMigration = 0810;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -521,6 +521,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = PZ4BB3W59D;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -528,9 +530,11 @@
 				INFOPLIST_FILE = MMCamScanner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.11visa.MMCamScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MMCamScanner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -540,6 +544,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = PZ4BB3W59D;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -547,8 +553,10 @@
 				INFOPLIST_FILE = MMCamScanner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.11visa.MMCamScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MMCamScanner-Bridging-Header.h";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};

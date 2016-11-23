@@ -12,10 +12,9 @@
 #define backgroundHex @"2196f3"
 #import "UIColor+HexRepresentation.h"
 #import "UIImage+fixOrientation.h"
-#import <TesseractOCR/TesseractOCR.h>
 #import "UploadManager.h"
 #import <CoreTelephony/CoreTelephonyDefines.h>
-@interface ViewController ()<MMCameraDelegate,MMCropDelegate,G8TesseractDelegate>
+@interface ViewController ()<MMCameraDelegate,MMCropDelegate>
 {
     RippleAnimation *ripple;
     
@@ -75,38 +74,6 @@
     self.pickerBut.layer.cornerRadius = self.pickerBut.frame.size.width / 2;
     self.pickerBut.clipsToBounds=YES;
     [self.pickerBut setImage:[UIImage renderImage:@"Gallery"] forState:UIControlStateNormal];
-}
-
-/*OCR Method Implementation*/
--(void)OCR:(UIImage *)image{
-    // Create RecognitionOperation
-    G8RecognitionOperation *operation = [[G8RecognitionOperation alloc] init];
-    
-    // Configure inner G8Tesseract object as described before
-    operation.tesseract.language = @"eng";
-//    operation.tesseract.charWhitelist = @"01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    operation.tesseract.image = [image g8_blackAndWhite];
-    operation.tesseract.delegate=self;
-    // Setup the recognitionCompleteBlock to receive the Tesseract object
-    // after text recognition. It will hold the recognized text.
-    operation.recognitionCompleteBlock = ^(G8Tesseract *recognizedTesseract) {
-        // Retrieve the recognized text upon completion
-        NSLog(@" OCR TEXT%@", [recognizedTesseract recognizedText]);
-    };
-    
-    // Add operation to queue
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperation:operation];
-
-}
-
-#pragma mark OCR delegate
-- (void)progressImageRecognitionForTesseract:(G8Tesseract *)tesseract {
-//    NSLog(@"progress: %lu", (unsigned long)tesseract.progress);
-}
-
-- (BOOL)shouldCancelImageRecognitionForTesseract:(G8Tesseract *)tesseract {
-    return NO;  // return YES, if you need to interrupt tesseract before it finishes
 }
 
 - (void)didReceiveMemoryWarning {

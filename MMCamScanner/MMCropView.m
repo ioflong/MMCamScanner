@@ -7,7 +7,13 @@
 //
 
 #import "MMCropView.h"
-#define kCropButtonSize 30
+
+#define kCropButtonSize 22
+
+@interface MMCropView ()
+
+@end
+
 @implementation MMCropView
 @synthesize pointD = _pointD;
 @synthesize pointC = _pointC;
@@ -27,75 +33,127 @@
         _pointC=[[UIView alloc] init];
         _pointD=[[UIView alloc] init];
         
-        //middle Points
-         _pointE=[[UIView alloc] init];
-         _pointF=[[UIView alloc] init];
-         _pointG=[[UIView alloc] init];
-         _pointH=[[UIView alloc] init];
         
-        _pointA.alpha=0.5;_pointB.alpha=0.5;_pointC.alpha=0.5;_pointD.alpha=0.5,_pointE.alpha=0.5,_pointF.alpha=0.5,_pointG.alpha=0.5,_pointH.alpha=0.5;
+        CGFloat alpha = 0.8;
+        _pointA.alpha=alpha;
+        _pointB.alpha=alpha;
+        _pointC.alpha=alpha;
+        _pointD.alpha=alpha;
         
         _pointA.layer.cornerRadius = kCropButtonSize/2;
         _pointB.layer.cornerRadius = kCropButtonSize/2;
         _pointC.layer.cornerRadius = kCropButtonSize/2;
         _pointD.layer.cornerRadius = kCropButtonSize/2;
         
-        //middle
-         _pointE.layer.cornerRadius = kCropButtonSize/2;
-         _pointF.layer.cornerRadius = kCropButtonSize/2;
-         _pointG.layer.cornerRadius = kCropButtonSize/2;
-         _pointH.layer.cornerRadius = kCropButtonSize/2;
+        UIColor *shadowColor = [UIColor blackColor];
+        CGFloat shadowOpacity = 0.3;
+        _pointA.layer.shadowColor = shadowColor.CGColor;
+        _pointA.layer.shadowOpacity = shadowOpacity;
+        _pointA.layer.shadowRadius = 10;
+        
+        _pointB.layer.shadowColor = shadowColor.CGColor;
+        _pointB.layer.shadowOpacity = shadowOpacity;
+        _pointB.layer.shadowRadius = 10;
+        
+        _pointC.layer.shadowColor = shadowColor.CGColor;
+        _pointC.layer.shadowOpacity = shadowOpacity;
+        _pointC.layer.shadowRadius = 10;
+        
+        _pointD.layer.shadowColor = shadowColor.CGColor;
+        _pointD.layer.shadowOpacity = shadowOpacity;
+        _pointD.layer.shadowRadius = 10;
         
         [self addSubview:_pointA];
         [self addSubview:_pointB];
         [self addSubview:_pointC];
         [self addSubview:_pointD];
         
-        //middle
-        [self addSubview:_pointE];
-        [self addSubview:_pointF];
-        [self addSubview:_pointG];
-        [self addSubview:_pointH];
         
         [self.points addObject:_pointD];
         [self.points addObject:_pointC];
         [self.points addObject:_pointB];
         [self.points addObject:_pointA];
         
-        
-        //middle
-         [self.points addObject:_pointE];
-         [self.points addObject:_pointF];
-         [self.points addObject:_pointG];
-         [self.points addObject:_pointH];
        
         
         //COLOR
-        _pointA.backgroundColor=[UIColor grayColor];
-         _pointB.backgroundColor=[UIColor grayColor];
-         _pointC.backgroundColor=[UIColor grayColor];
-         _pointD.backgroundColor=[UIColor grayColor];
+        _pointA.backgroundColor=[UIColor whiteColor];
+        _pointB.backgroundColor=[UIColor whiteColor];
+        _pointC.backgroundColor=[UIColor whiteColor];
+        _pointD.backgroundColor=[UIColor whiteColor];
         
-        //middle
-        _pointE.backgroundColor=[UIColor grayColor];
-        _pointF.backgroundColor=[UIColor grayColor];
-        _pointG.backgroundColor=[UIColor grayColor];
-        _pointH.backgroundColor=[UIColor grayColor];
-        
-        
-        
-        
-        
+
         [self setPoints];
         [self setClipsToBounds:NO];
         [self setBackgroundColor:[UIColor clearColor]];
         [self setUserInteractionEnabled:YES];
         [self setContentMode:UIViewContentModeRedraw];
         [self setButtons];
-   
-        
+        if (!self.alreadyShowRedDot) {
+            [self addSubview:self.redDot];
+        }
     }
     return self;
+}
+
+- (UIView *)redDot {
+    if (!_redDot) {
+        _redDot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
+        _redDot.backgroundColor = [UIColor redColor];
+        _redDot.layer.cornerRadius = 5.0;
+        _redDot.clipsToBounds = YES;
+    }
+    return _redDot;
+}
+
+- (void)resortPoints {
+
+    NSArray *points = self.points;
+    points = [points sortedArrayUsingComparator:^NSComparisonResult(UIView * _Nonnull obj1, UIView * _Nonnull obj2) {
+        return obj1.frame.origin.x > obj2.frame.origin.x;
+    }];
+    
+    UIView *point1 = points.firstObject;
+    UIView *point2 = [points objectAtIndex:1];
+    UIView *point3 = [points objectAtIndex:2];
+    UIView *point4 = [points objectAtIndex:3];
+
+    if (point1.frame.origin.y > point2.frame.origin.y) {
+        self.pointA = point1;
+        self.pointD = point2;
+    } else {
+        self.pointA = point2;
+        self.pointD = point1;
+    }
+    
+    if (point3.frame.origin.y > point4.frame.origin.y) {
+        self.pointB = point3;
+        self.pointC = point4;
+    } else {
+        self.pointB = point4;
+        self.pointC = point3;
+    }
+    
+    [self topLeftCornerToCGPoint:self.pointD.center];
+    [self topRightCornerToCGPoint:self.pointC.center];
+    [self bottomRightCornerToCGPoint:self.pointB.center];
+    [self bottomLeftCornerToCGPoint:self.pointA.center];
+}
+
+- (BOOL)shouldResetFrame:(BOOL)resotPoints {
+    if (resotPoints) {
+        [self resortPoints];
+    }
+    CGFloat aLength = fabs(self.pointA.frame.origin.x - self.pointB.frame.origin.x);
+    CGFloat bLength = fabs(self.pointA.frame.origin.y - self.pointC.frame.origin.y);
+    CGFloat area = aLength * bLength;
+    CGFloat totalArea = self.bounds.size.width * self.bounds.size.height;
+    
+    BOOL shouldResetFrame = NO;
+    if (area <= totalArea / 5.0) {
+        shouldResetFrame = YES;
+    }
+    return shouldResetFrame;
 }
 
 - (NSArray *)getPoints
@@ -133,16 +191,16 @@
     
     switch (point) {
         case 1:
-            tmp = CGPointMake((_pointA.frame.origin.x+15) / scaleFactor, (_pointA.frame.origin.y+15) / scaleFactor);
+            tmp = CGPointMake((_pointA.frame.origin.x + kCropButtonSize / 2) / scaleFactor, (_pointA.frame.origin.y + kCropButtonSize / 2) / scaleFactor);
             break;
         case 2:
-            tmp = CGPointMake((_pointB.frame.origin.x+15) / scaleFactor, (_pointB.frame.origin.y+15) / scaleFactor);
+            tmp = CGPointMake((_pointB.frame.origin.x + kCropButtonSize / 2) / scaleFactor, (_pointB.frame.origin.y + kCropButtonSize / 2) / scaleFactor);
             break;
         case 3:
-            tmp = CGPointMake((_pointC.frame.origin.x+15) / scaleFactor, (_pointC.frame.origin.y+15) / scaleFactor);
+            tmp = CGPointMake((_pointC.frame.origin.x + kCropButtonSize / 2) / scaleFactor, (_pointC.frame.origin.y + kCropButtonSize / 2) / scaleFactor);
             break;
         case 4:
-            tmp =  CGPointMake((_pointD.frame.origin.x+15) / scaleFactor, (_pointD.frame.origin.y+15) / scaleFactor);
+            tmp =  CGPointMake((_pointD.frame.origin.x + kCropButtonSize / 2) / scaleFactor, (_pointD.frame.origin.y + kCropButtonSize / 2) / scaleFactor);
             break;
     }
     
@@ -169,30 +227,23 @@
     b = CGPointMake(self.bounds.size.width - 0, self.bounds.size.height - 0);
     c = CGPointMake(self.bounds.size.width - 0, 0 + 0);
     d = CGPointMake(0 + 0, 0 + 0);
-    
-    //middle
-    e = CGPointMake((a.x+b.x)/2 ,a.y);
-    f = CGPointMake(b.x, 0 + (b.y + c.y)/2);
-    g = CGPointMake((c.x+d.x)/2, 0 + c.y);
-    h = CGPointMake(a.x, 0 + (a.y + d.y)/2);
-    
-
+    [self resetRedDot];
 }
 
 - (void)setButtons
 {
    
     [_pointD setFrame:CGRectMake(d.x - kCropButtonSize / 2, d.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
-    [_pointC setFrame:CGRectMake(c.x - kCropButtonSize / 2,c.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
+    [_pointC setFrame:CGRectMake(c.x - kCropButtonSize / 2, c.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
     [_pointB setFrame:CGRectMake(b.x - kCropButtonSize / 2, b.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
     [_pointA setFrame:CGRectMake(a.x - kCropButtonSize / 2, a.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
     
-    [_pointE setFrame:CGRectMake(e.x - kCropButtonSize / 2, e.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
-    [_pointF setFrame:CGRectMake(f.x - kCropButtonSize / 2, f.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
-    [_pointG setFrame:CGRectMake(g.x - kCropButtonSize / 2, g.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
-    [_pointH setFrame:CGRectMake(h.x - kCropButtonSize / 2, h.y - kCropButtonSize / 2, kCropButtonSize, kCropButtonSize)];
-    
-  
+}
+
+- (void)resetRedDot {
+    if (!self.alreadyShowRedDot) {
+        self.redDot.center = CGPointMake(b.x - 20, b.y - 20);
+    }
 }
 
 - (void)bottomLeftCornerToCGPoint: (CGPoint)point
@@ -204,6 +255,7 @@
 - (void)bottomRightCornerToCGPoint: (CGPoint)point
 {
     b = point;
+    [self resetRedDot];
     [self needsRedraw];
 }
 
@@ -224,7 +276,6 @@
     
     [self setNeedsDisplay];
     [self setButtons];
-    [self cornerControlsMiddle];
     [self drawRect:self.bounds];
 }
 
@@ -240,13 +291,16 @@
         CGContextSetRGBFillColor(context, 0.0f, 0.0f, 0.0f, 0.0f);
         if([self checkForNeighbouringPoints:currentIndex]>=0 ){
             frameMoved=YES;
-             CGContextSetRGBStrokeColor(context, 0.1294f, 0.588f, 0.9529f, 1.0f);
+             CGContextSetRGBStrokeColor(context, 1.0f, 1.0f, 1.0f, 1.0f);
             
         }
         else{
             frameMoved=NO;
              CGContextSetRGBStrokeColor(context, 0.9568f, 0.262f, 0.211f, 1.0f);
            
+        }
+        if (self.delegate && [self.delegate respondsToSelector:@selector(cropView:frameEdited:)]) {
+            [self.delegate cropView:self frameEdited:frameMoved];
         }
         CGContextSetLineJoin(context, kCGLineJoinRound);
         CGContextSetLineWidth(context, 4.0f);
@@ -257,10 +311,10 @@
         
         CGMutablePathRef pathRef = CGPathCreateMutable();
         
-        CGPathMoveToPoint(pathRef, NULL, _pointA.frame.origin.x+15, _pointA.frame.origin.y+15);
-        CGPathAddLineToPoint(pathRef, NULL, _pointB.frame.origin.x+15, _pointB.frame.origin.y+15);
-        CGPathAddLineToPoint(pathRef, NULL, _pointC.frame.origin.x+15, _pointC.frame.origin.y+15);
-        CGPathAddLineToPoint(pathRef, NULL, _pointD.frame.origin.x+15, _pointD.frame.origin.y+15);
+        CGPathMoveToPoint(pathRef, NULL, _pointA.frame.origin.x + kCropButtonSize / 2, _pointA.frame.origin.y + kCropButtonSize / 2);
+        CGPathAddLineToPoint(pathRef, NULL, _pointB.frame.origin.x + kCropButtonSize / 2, _pointB.frame.origin.y + kCropButtonSize / 2);
+        CGPathAddLineToPoint(pathRef, NULL, _pointC.frame.origin.x + kCropButtonSize / 2, _pointC.frame.origin.y + kCropButtonSize / 2);
+        CGPathAddLineToPoint(pathRef, NULL, _pointD.frame.origin.x + kCropButtonSize / 2, _pointD.frame.origin.y + kCropButtonSize / 2);
         
 
         CGPathCloseSubpath(pathRef);
@@ -358,7 +412,6 @@
             [[self.points objectAtIndex:0] setFrame:temp3];
             [[self.points objectAtIndex:3] setFrame:temp0];
             [self checkangle:0];
-            [self cornerControlsMiddle];
             [self setNeedsDisplay];
         }
         if ([self checkForVerticalIntersection]) {
@@ -368,7 +421,6 @@
             [[self.points objectAtIndex:2] setFrame:temp3];
             [[self.points objectAtIndex:3] setFrame:temp0];
             [self checkangle:0];
-            [self cornerControlsMiddle];
             [self setNeedsDisplay];
         }
         
@@ -382,9 +434,7 @@
         
         [[self.points objectAtIndex:0] setFrame:temp2];
         [[self.points objectAtIndex:2] setFrame:temp0];
-        [self cornerControlsMiddle];
         [self setNeedsDisplay];
-        
     }
     
 }
@@ -456,7 +506,6 @@
     }
     
     previousIndex=currentIndex;
-    
 }
 
 -(BOOL)checkForHorizontalIntersection{
@@ -526,13 +575,6 @@
                 
                 smallestDistance = distanceToThis;
                 currentIndex=i;
-                
-                if(i==4 || i==5 || i==6 || i==7){
-                    middlePoint=YES;
-                }
-                else{
-                    middlePoint=NO;
-                }
             }
         }
         i++;
@@ -562,34 +604,21 @@
     }
     locationPoint = CGPointMake(newX, newY);
     
-    if (self.activePoint && !middlePoint){
+    if (self.activePoint){
         self.activePoint.frame = CGRectMake(locationPoint.x -kCropButtonSize/2, locationPoint.y -kCropButtonSize/2, kCropButtonSize, kCropButtonSize);
-        [self cornerControlsMiddle];
-        
 //        NSLog(@"Point D %f %f",_pointD.frame.origin.x,_pointD.frame.origin.y);
+    } else{
+//        if(![self checkForNeighbouringPoints:currentIndex]){
+//            [self movePointsForMiddle:locationPoint];
+//        }
     }
-    else{
-        if(![self checkForNeighbouringPoints:currentIndex]){
-            [self movePointsForMiddle:locationPoint];
-        }
-        
-      
-    }
-      [self setNeedsDisplay];
+    [self setNeedsDisplay];
     
+    self.redDot.hidden = YES;
+    self.alreadyShowRedDot = YES;
 }
 
 
-//Corner Touch
-
--(void)cornerControlsMiddle{
-    
-    self.pointE.frame=CGRectMake((self.pointA.frame.origin.x+self.pointB.frame.origin.x)/2, (self.pointA.frame.origin.y+self.pointB.frame.origin.y)/2, kCropButtonSize, kCropButtonSize);
-    self.pointG.frame=CGRectMake((self.pointC.frame.origin.x+self.pointD.frame.origin.x)/2, (self.pointC.frame.origin.y+self.pointD.frame.origin.y)/2, kCropButtonSize, kCropButtonSize);
-    self.pointF.frame=CGRectMake((self.pointB.frame.origin.x+self.pointC.frame.origin.x)/2, (self.pointB.frame.origin.y+self.pointC.frame.origin.y)/2, kCropButtonSize, kCropButtonSize);
-     self.pointH.frame=CGRectMake((self.pointA.frame.origin.x+self.pointD.frame.origin.x)/2, (self.pointA.frame.origin.y+self.pointD.frame.origin.y)/2, kCropButtonSize, kCropButtonSize);
-    
-}
 //Middle Touch
 - (void)movePointsForMiddle:(CGPoint)locationPoint
 {
@@ -624,8 +653,6 @@
 
 
     }
-    [self cornerControlsMiddle];
-    
 }
 
 @end

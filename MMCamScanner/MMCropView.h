@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "MTGeometry.h"
+
+@class MMCropView;
+
+@protocol MMCropViewDelegate <NSObject>
+
+@optional
+- (void)cropView:(MMCropView *)cropView frameEdited:(BOOL)frameEdited;
+
+@end
+
 @interface MMCropView : UIView
 {
     CGPoint touchOffset;
@@ -16,14 +26,15 @@
     CGPoint c;
     CGPoint d;
     
-    //middle
-    CGPoint e,f,g,h;
-    
-    BOOL frameMoved,middlePoint;
+   
+    BOOL frameMoved;
     int currentIndex,previousIndex;
     int k;
     
 }
+
+@property (nonatomic, weak) id<MMCropViewDelegate> delegate;
+
 @property (nonatomic, strong) UIView *activePoint;
 
 @property (strong, nonatomic) UIView *pointD;
@@ -31,10 +42,13 @@
 @property (strong, nonatomic) UIView *pointB;
 @property (strong, nonatomic) UIView *pointA;
 //middle points
-@property (strong, nonatomic) UIView *pointE,*pointF,*pointG,*pointH;
 @property (nonatomic, strong) NSMutableArray *points;
 
+@property (strong, nonatomic) UIView *redDot;
+@property (assign, nonatomic) BOOL alreadyShowRedDot;
 
+- (void)resortPoints;
+- (BOOL)shouldResetFrame:(BOOL)resotPoints;
 - (BOOL)frameEdited;
 - (void)resetFrame;
 - (CGPoint)coordinatesForPoint: (int)point withScaleFactor: (CGFloat)scaleFactor;
